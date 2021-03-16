@@ -16,6 +16,11 @@
     <input type="text" class="input-form" formControlName="number" placeholder="Enter your number" /><br><br />
     <label for="complement">Complement</label><br><br />
     <input type="text" class="input-form" formControlName="complement" placeholder="Enter your complement" /><br><br />
+    <label for="state">State</label><br><br />
+    <select class="input-form" formControlName="state" placeholder="Select your state">
+      <option *ngFor="let state of states | async" [value] = "state.sigla">{{ state.nome }}</option>
+    </select><br><br />
+    
   </div>
   <button type="submit">Send</button>
 </form>
