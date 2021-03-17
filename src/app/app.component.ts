@@ -3,7 +3,7 @@ import { DropdownService } from './services/dropdown.service';
 import { Component, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { StateBr } from './state-br';
 import { Observable } from 'rxjs';
 
@@ -16,6 +16,9 @@ export class AppComponent implements OnInit {
 
   reactive_form: FormGroup;
   states: Observable<StateBr[]>;
+  roles: any[];
+  techs: any[];
+  frameworks = ['Angular', 'React', 'Vue'];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -26,6 +29,8 @@ export class AppComponent implements OnInit {
   ngOnInit() {
 
     this.states = this.DropdownService.getStateBr();
+    this.roles = this.DropdownService.getRole();
+    this.techs = this.DropdownService.getTech();
 
     this.reactive_form = this.formBuilder.group({
       name: [null, [Validators.required, Validators.maxLength(45)]],
@@ -36,17 +41,31 @@ export class AppComponent implements OnInit {
         street: [null, [Validators.required]],
         number: [null, [Validators.required]],
         complement: [null],
-        state: [null]
-
-      })
+        state: [null],
+      }),
+      role: [null],
+      tech: [null],
+      frameworks: this.buildFrameworks(),
     });
   }
 
+  buildFrameworks() {
+    const values = this.frameworks.map( v => new FormControl(false));
+    return this.formBuilder.array(values);
+  }
+
   onSubmit() {
-    console.log(this.reactive_form.value);
+
+    let valueSubmit = Object.assign({}, this.reactive_form.value);
+
+    valueSubmit = Object.assign(valueSubmit, {
+      frameworks: valueSubmit.frameworks
+        .map((v, i) => v ? this.frameworks[i] : null)
+        .filter(v => v !== null)
+    });
 
     this.http.post('https://httpbin.org/post',
-      JSON.stringify(this.reactive_form.value))
+      JSON.stringify(valueSubmit))
       .pipe(map(res => res))
       .subscribe(data => {
         console.log(data);
@@ -75,8 +94,6 @@ export class AppComponent implements OnInit {
         state: data.uf
       }
     });
-
-    console.log(data)
   }
 
   resetFormData() {
@@ -89,6 +106,10 @@ export class AppComponent implements OnInit {
         state: null
       }
     });
+  }
+
+  compareRoles(object1, object2) {
+    return object1 && object2 ? (object1.name === object2.name) : object1 && object2;
   }
 
 }

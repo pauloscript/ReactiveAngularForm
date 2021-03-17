@@ -17,10 +17,21 @@
     <label for="complement">Complement</label><br><br />
     <input type="text" class="input-form" formControlName="complement" placeholder="Enter your complement" /><br><br />
     <label for="state">State</label><br><br />
-    <select class="input-form" formControlName="state" placeholder="Select your state">
+    <select class="input-form" formControlName="state" >
       <option *ngFor="let state of states | async" [value] = "state.sigla">{{ state.nome }}</option>
     </select><br><br />
-    
+  </div>
+  <label for="role">Position role</label><br><br />
+  <select class="input-form" formControlName="role"  [compareWith]="compareRoles">
+    <option *ngFor="let role of roles" [ngValue] = "role">{{role.name}}</option>
+  </select><br><br />
+  <label for="tech">Technologies</label><br><br />
+  <select multiple class="input-form" formControlName="tech"  [compareWith]="compareRoles">
+    <option *ngFor="let tech of techs" [value] = "tech.name">{{tech.name}}</option>
+  </select><br><br />
+  <label for="framworks">Frameworks</label><br><br />
+  <div formArrayName="frameworks" *ngFor="let item of reactive_form.get('frameworks')['controls']; let i = index">
+  <input type="checkbox" [formControlName]="i">{{frameworks[i]}}<br><br />
   </div>
   <button type="submit">Send</button>
 </form>
